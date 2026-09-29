@@ -1,0 +1,69 @@
+version: '3.8'
+
+# Sprint Poker – Docker Swarm stack
+# Deploy with: docker stack deploy -c stack.yml sprint-poker
+#
+# Prerequisites:
+#   - Traefik v2 already running on the "swarm-public" overlay network
+#   - DNS record pointing poker.vegadigital.dev → your Swarm manager
+#   - ACME / Let's Encrypt cert resolver named "letsencrypt" in Traefik config
+#
+# Adjust the Host rule and certresolver name to match your Traefik setup.
+
+services:
+  server:
+    image: registry.vegadigital.dev/sprint-poker-server:latest
+    # OR build locally and push:
+    #   docker build -t registry.vegadigital.dev/sprint-poker-server:latest ./server
+    #   docker push registry.vegadigital.dev/sprint-poker-server:latest
+    environment:
+      PORT: "3001"
+      NODE_ENV: production
+    networks:
+      - swarm-public
+      - internal
+    deploy:
+      replicas: 1          # Keep at 1 — in-memory room state, no shared store
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=swarm-public"
+
+        # HTTPS router
+        - "traefik.http.routers.poker-server.rule=Host(`poker.vegadigital.dev`) && PathPrefix(`/ws`, `/health`)"
+        - "traefik.http.routers.poker-server.entrypoints=websecure"
+        - "traefik.http.routers.poker-server.tls=true"
+        - "traefik.http.routers.poker-server.tls.certresolver=letsencrypt"
+
+        # WebSocket sticky upgrade
+        - "traefik.http.middlewares.poker-ws.headers.customrequestheaders.X-Forwarded-Proto=https"
+        - "traefik.http.routers.poker-server.middlewares=poker-ws"
+
+        - "traefik.http.services.poker-server.loadbalancer.server.port=3001"
+
+  client:
+    image: registry.vegadigital.dev/sprint-poker-client:latest
+    # Build: docker build -t registry.vegadigital.dev/sprint-poker-client:latest ./client
+    networks:
+      - swarm-public
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=swarm-public"
+        - "traefik.http.routers.poker-client.rule=Host(`poker.vegadigital.dev`)"
+        - "traefik.http.routers.poker-client.entrypoints=websecure"
+        - "traefik.http.routers.poker-client.tls=true"
+        - "traefik.http.routers.poker-client.tls.certresolver=letsencrypt"
+        - "traefik.http.services.poker-client.loadbalancer.server.port=80"
+
+networks:
+  swarm-public:
+    external: true
+  internal:
+    driver: overlay

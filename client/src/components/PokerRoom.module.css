@@ -1,0 +1,364 @@
+.root {
+  min-height: 100vh;
+  background: #0d0f12;
+  color: #e2e8f0;
+  font-family: 'DM Mono', monospace;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  height: 56px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: #161a20;
+}
+
+.brandRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brandMark {
+  font-size: 18px;
+  filter: drop-shadow(0 0 6px rgba(24,95,165,0.5));
+}
+
+.brandName {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #f0ede8;
+}
+
+.roomRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.roomLabel {
+  font-size: 11px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.codeBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #0d0f12;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.codeBtn:hover { border-color: rgba(24,95,165,0.5); }
+
+.codeText {
+  font-family: 'DM Mono', monospace;
+  font-size: 15px;
+  font-weight: 500;
+  color: #f0ede8;
+  letter-spacing: 3px;
+}
+
+.copyHint {
+  font-size: 10px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.leaveBtn {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: #6b7280;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.leaveBtn:hover { color: #fca5a5; border-color: rgba(239,68,68,0.3); }
+
+.main {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.section {}
+.sectionLabel {
+  font-size: 11px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reconnectBanner {
+  background: rgba(234, 179, 8, 0.1);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 12px;
+  color: #fbbf24;
+  text-align: center;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Voter strip */
+.voterStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.voterChip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px 5px 8px;
+  background: #161a20;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px;
+  font-size: 12px;
+  color: #9ca3af;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.voterChip.voted {
+  background: rgba(24,95,165,0.12);
+  border-color: rgba(24,95,165,0.4);
+  color: #93c5fd;
+}
+
+.voterChip.isMe {
+  border-color: rgba(24,95,165,0.6);
+}
+
+.voterChip.offline {
+  opacity: 0.45;
+  border-style: dashed;
+}
+
+.chipDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.voted .chipDot { background: #3b82f6; box-shadow: 0 0 4px rgba(59,130,246,0.5); }
+
+.chipName {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chipScore {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 13px;
+  color: #f0ede8;
+  margin-left: 4px;
+}
+
+/* Card grid */
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 520px) {
+  .cardGrid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.card {
+  aspect-ratio: 2/3;
+  background: #161a20;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 22px;
+  font-weight: 500;
+  color: #c9c5be;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s, background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(24,95,165,0.6);
+  color: #f0ede8;
+}
+
+.cardSelected {
+  background: #185FA5;
+  border-color: #185FA5;
+  color: #fff;
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(24,95,165,0.35);
+}
+
+.pickedMsg {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #6b7280;
+}
+.pickedMsg strong { color: #93c5fd; }
+
+/* Results */
+.resultsSection {
+  background: #161a20;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+  padding: 1.25rem;
+  animation: fadeUp 0.3s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.consensusBadge {
+  display: inline-block;
+  padding: 2px 10px;
+  background: rgba(74,222,128,0.1);
+  border: 1px solid rgba(74,222,128,0.25);
+  border-radius: 10px;
+  color: #4ade80;
+  font-size: 10px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.resultCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.resultCard {
+  background: #0d0f12;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 12px 8px;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+
+.resultHigh {
+  border-color: rgba(24,95,165,0.4);
+  background: rgba(24,95,165,0.08);
+}
+
+.resultScore {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 28px;
+  font-weight: 500;
+  color: #f0ede8;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.resultName {
+  font-size: 11px;
+  color: #6b7280;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statsRow {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 12px;
+}
+
+.stat { display: flex; flex-direction: column; gap: 3px; }
+.statLabel { font-size: 10px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+.statVal { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 500; color: #f0ede8; }
+.statAccent { color: #60a5fa; }
+.statConsensus { color: #4ade80; }
+
+/* Actions */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btnReveal {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 24px;
+  background: #185FA5;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+.btnReveal:hover:not(:disabled) { background: #1a6db8; }
+.btnReveal:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.voteCount {
+  font-size: 11px;
+  background: rgba(255,255,255,0.15);
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+
+.btnNewRound {
+  height: 44px;
+  padding: 0 24px;
+  background: transparent;
+  color: #9ca3af;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.btnNewRound:hover { background: #161a20; color: #f0ede8; }
+
+.allVotedHint {
+  font-size: 12px;
+  color: #4ade80;
+}

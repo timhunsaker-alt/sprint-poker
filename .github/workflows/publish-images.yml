@@ -1,0 +1,73 @@
+name: Publish container images
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-images-main
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Build and push server and client images
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+
+      # registry.vegadigital.dev currently permits unauthenticated push.
+      # When registry authentication is enabled, add docker/login-action using
+      # repository secrets before these builds; never put credentials here.
+      - name: Build and push server
+        uses: docker/build-push-action@v6
+        with:
+          context: ./server
+          push: true
+          tags: |
+            registry.vegadigital.dev/sprint-poker-server:${{ github.sha }}
+            registry.vegadigital.dev/sprint-poker-server:latest
+
+      - name: Build and push client
+        uses: docker/build-push-action@v6
+        with:
+          context: ./client
+          build-args: |
+            VITE_WS_URL=wss://poker.vegadigital.dev/ws
+          push: true
+          tags: |
+            registry.vegadigital.dev/sprint-poker-client:${{ github.sha }}
+            registry.vegadigital.dev/sprint-poker-client:latest
+
+      # Portainer's git-triggered redeploy only re-runs `docker stack deploy`
+      # when deploy/stack.yml's content changes, so pin the exact immutable
+      # tag built above into the file and commit it before hitting the
+      # webhook (same pattern as agent-project-orchestrator).
+      - name: Pin deployed image tags and commit
+        run: |
+          sed -i "s#sprint-poker-server:.*#sprint-poker-server:${{ github.sha }}#g" deploy/stack.yml
+          sed -i "s#sprint-poker-client:.*#sprint-poker-client:${{ github.sha }}#g" deploy/stack.yml
+          if git diff --quiet -- deploy/stack.yml; then
+            echo "deploy/stack.yml already pinned to this sha; nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add deploy/stack.yml
+          git commit -m "chore(deploy): pin sprint-poker images to ${{ github.sha }}"
+          git push origin HEAD:main
+
+      - name: Redeploy sprint-poker stack via Portainer GitOps webhook
+        env:
+          PORTAINER_STACK_WEBHOOK: ${{ secrets.PORTAINER_STACK_WEBHOOK }}
+        run: |
+          if [[ -z "$PORTAINER_STACK_WEBHOOK" ]]; then
+            echo "PORTAINER_STACK_WEBHOOK is not configured; images were pushed but the stack was not redeployed."
+            exit 1
+          fi
+          curl --fail-with-body --silent --show-error --request POST "$PORTAINER_STACK_WEBHOOK"
